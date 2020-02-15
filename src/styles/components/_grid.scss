@@ -1,0 +1,34 @@
+$grid-width: 114rem;
+$grid-columns: 12;
+
+.row {
+   max-width: $grid-width;
+   margin-left: -10px;
+   margin-right: -10px;
+
+   @include responsive(tab-portrait) {
+      max-width: 100%;
+      width: 100%;
+      margin: 0;
+   }
+
+   @include clearfix;
+}
+
+@for $i from 1 through $grid-columns {
+   .lg-#{$i} {
+      width: percentage($i / $grid-columns);
+   }
+
+   @include responsive(tab-portrait) {
+      .sm-#{$i} {
+         width: percentage($i / $grid-columns);
+      }
+   }
+}
+
+[class^="columns"] {
+   float: left;
+   padding-left: 10px;
+   padding-right: 10px;
+}
