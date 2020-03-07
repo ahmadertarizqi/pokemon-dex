@@ -30,7 +30,7 @@ class App extends Component {
          this.setState({ pokemons: pokemon.data.results });
       }, error => {
          console.log(error);
-      }, 1500, offset, limit);
+      }, offset, limit);
    }
 
    loadMorePokemon = () => {
@@ -46,7 +46,7 @@ class App extends Component {
             });
          }, error => {
             console.log(error);
-         }, 1000, offset, limit)
+         }, offset, limit)
       });
    }
 
@@ -59,7 +59,7 @@ class App extends Component {
          });
       }, error => {
          console.log(error)
-      }, null, name);
+      }, name);
    }
 
    onNextPokemon = () => {
@@ -69,7 +69,7 @@ class App extends Component {
             this.setState({ pokemonSelected: pokemon.data, isLoading: false });
          }, error => {
             console.log(error);
-         }, 500, next);
+         }, next);
       });
    }
 
@@ -80,7 +80,7 @@ class App extends Component {
             this.setState({ pokemonSelected: pokemon.data, isLoading: false });
          }, error => {
             console.log(error);
-         }, 500, prev);
+         }, prev);
       });
    }
 
@@ -101,17 +101,19 @@ class App extends Component {
          return pokemon.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
       });
 
+      const { pokemons } = this.state;
+
       return (
          <div className="container">
             <div className="header">
                <h2 className="title-page">Pokedex</h2>
-               <h3>Total Pokemons : {this.state.pokemons.filter(pokemon => pokemon.name).length}</h3>
+               <h3>Total Pokemons : {pokemons.filter(pokemon => pokemon.name).length}</h3>
                <SearchBar
                   search={this.state.search}
                   onSearchInput={this.searchHandleChange}
                />
             </div>
-            {!this.state.pokemons.length  ?
+            {!pokemons.length ?
                <div className="retrieve-data">Retrieve Pokemon...</div>
                :
                <PokeList
@@ -119,6 +121,7 @@ class App extends Component {
                   clickDetail={this.onGetDetail}
                   isLoading={this.state.isLoading}
                   loadMorePokemon={this.loadMorePokemon}
+                  search={this.state.search}
                />
             }
             <SideDetail
