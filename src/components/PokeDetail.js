@@ -1,4 +1,5 @@
 import React from 'react';
+import { convertStats } from '../utils'
 
 const PokeDetail = ({ pokemon, onCloseDetail }) => {
 
@@ -36,22 +37,23 @@ const PokeDetail = ({ pokemon, onCloseDetail }) => {
             </div>
             <h1 style={{marginBottom: 15}}>Stats</h1>
             {pokemon.stats.reverse().map((s, idx) => (
-               <StatsChart key={idx} name={s.stat.name} stat={s.base_stat} />
+               <StatsChart key={idx} name={s.stat.name} stat={s.base_stat} maxStat="300"/>
             ))}
          </div>
       </div>
    );
 }
 
-const StatsChart = ({name, stat}) => {
+export default PokeDetail;
+
+const StatsChart = ({ name, stat, maxStat }) => {
    return (
       <div className="graph">
-         <div className="name"><strong>{name} : </strong></div>
+         <div className="name"><strong>{name} <b>:</b> </strong></div>
          <div className="bar">
-            <div className="bar-value" style={{ width: `${stat}%` }}></div>
+            <span className="bar-number">{stat}</span>
+            <div className="bar-value" style={{ width: convertStats(stat, maxStat) + '%' }}></div>
          </div>
       </div>
    );
 }
-
-export default PokeDetail;
