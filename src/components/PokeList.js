@@ -2,8 +2,9 @@ import React from 'react';
 import { setIdFromURL } from '../utils';
 
 const PokeList = (props) => {
-   const { pokemons, clickDetail, isLoading, loadMorePokemon, search } = props;
-
+   const { pokemons, clickDetail, isLoading, loadMorePokemon, search, pokemonCategory } = props;
+   console.log(pokemons);
+   
    return (
       <div className="row" style={{ paddingTop: '15rem' }}>
          {pokemons.map((pokemon, idx) => (
@@ -14,14 +15,13 @@ const PokeList = (props) => {
             />
          ))}
          
-         {search !== '' ? 
-            null : 
+         {search !== '' || pokemonCategory !== 'all' ? 
+            null :
             <button className="btn-more"
                disabled={isLoading}
                onClick={loadMorePokemon}
             >
                {isLoading ? 'Fetching Pokemon...' : 'Load More Pokemon'}
-               <p>{search}</p>
             </button>
          }
       </div>
@@ -34,12 +34,12 @@ const PokeItem = ({ pokemon, clickDetail }) => {
 
    return (
       <div className="columns lg-3 sm-6">
-         <div className="poke-item" onClick={() => clickDetail(setIdFromURL(pokemon.url))} >
+         <div className="poke-item" onClick={() => clickDetail(setIdFromURL(pokemon.url || pokemon.pokemon.url))} >
             <div className="image">
-               <img src={`${imgURL + setIdFromURL(pokemon.url)}.png`} alt="" />
+               <img src={`${imgURL + setIdFromURL(pokemon.url || pokemon.pokemon.url)}.png`} alt="" />
             </div>
             <div className="content">
-               <h2 className="name">{pokemon.name}</h2>
+               <h2 className="name">{pokemon.name || pokemon.pokemon.name}</h2>
             </div>
          </div>
       </div>

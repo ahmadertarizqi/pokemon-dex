@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import api from '../api/pokemon';
 
-import SearchBar from './SearchBar';
+import FilterBar from './FilterBar';
 import PokeList from './PokeList';
 import SideDetail from './SideDetail';
 
@@ -12,10 +12,12 @@ class App extends Component {
       pokemons: [],
       pokemonSelected: null,
       search: '',
-      limit: 28,
+      limit: 40,
       page: 1,
       isOpen: false,
       isLoading: false,
+      pokemonCategory: 'all',
+      filtered: []
    }
 
    componentDidMount() {
@@ -92,36 +94,75 @@ class App extends Component {
       });
    }
 
+   selectHandleChange = (ev) => {
+      this.setState({
+         pokemonCategory: ev.target.value
+      }, () => {
+         if(this.state.pokemonCategory === 'all') {
+            this.loadPokemon();
+         } else {
+            api.getPokemonType(({ data : { pokemon } }) => {
+               this.setState({
+                  pokemons: pokemon
+               }, () => console.log('from select', this.state.pokemons));
+            }, error => {
+               console.log(error);
+            }, this.state.pokemonCategory);
+         }
+      });
+   }
+
    searchHandleChange = (ev) => {
-      this.setState({ search: ev.target.value });
+      console.log(ev.target.value);
+
+      // // hold original version of the list
+      // let currentList = [];
+
+      // // hold the filtered list before putting into state
+      // let newList = [];
+
+      // if(ev.target.value !== '') {
+      //    currentList = this.state.pokemons;
+
+      //    newList = currentList.filter(item => {
+      //       const lc = item.name.toLowerCase();
+      //       const filter = ev.target.value.toLowerCase();
+      //       return lc.includes(filter);
+      //    });
+      // } else {
+      //    newList = this.state.pokemons;
+      // }
+
+      // this.setState({ 
+      //    filtered: newList 
+      // });
    }
 
    render() {
-      let filterPokemon = this.state.pokemons.filter(pokemon => {
-         return pokemon.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
-      });
-
       const { pokemons } = this.state;
-
       return (
          <div className="container">
             <div className="header">
                <h2 className="title-page">Pokedex</h2>
-               <h3>Total Pokemons : {pokemons.filter(pokemon => pokemon.name).length}</h3>
-               <SearchBar
+               <h3>Total Pokemons : {pokemons.length}</h3>
+               <FilterBar
                   search={this.state.search}
-                  onSearchInput={this.searchHandleChange}
+                  searchHandle={this.searchHandleChange}
+                  pokemonCategory={this.state.pokemonCategory}
+                  selectHandleChange={this.selectHandleChange}
+                  onSearchSubmit={this.onSearchSubmit}
                />
             </div>
             {!pokemons.length ?
                <div className="retrieve-data">Retrieve Pokemon...</div>
                :
                <PokeList
-                  pokemons={filterPokemon}
+                  pokemons={this.state.pokemons}
                   clickDetail={this.onGetDetail}
                   isLoading={this.state.isLoading}
                   loadMorePokemon={this.loadMorePokemon}
                   search={this.state.search}
+                  pokemonCategory={this.state.pokemonCategory}
                />
             }
             <SideDetail
