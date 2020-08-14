@@ -1,5 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/index';
+import { Provider } from './context';
 
-ReactDOM.render(<App />, document.querySelector('#root'));
+ReactDOM.render(
+   <Provider><App /></Provider>, 
+   document.querySelector('#root')
+);
