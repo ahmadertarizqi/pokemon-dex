@@ -27,9 +27,7 @@ export class Provider extends React.Component {
    render() {
       const reducer = {
          state: this.state,
-         dispatch: {
-            getPokemons: this.getPokemons
-         }
+         getPokemons: this.getPokemons
       }
 
       return (

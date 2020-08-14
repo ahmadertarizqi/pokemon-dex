@@ -26,7 +26,7 @@ class App extends Component {
 
    componentDidMount() {
       const context = this.context;
-      context.dispatch.getPokemons();
+      context.getPokemons();
    }
 
    // loadPokemon = async () => {
