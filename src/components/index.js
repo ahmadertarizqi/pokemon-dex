@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import api from '../api/pokemon';
+import * as api from '../api/pokemon';
 
 import FilterBar from './FilterBar';
 import PokeList from './PokeList';
 import SideDetail from './SideDetail';
+
+import { Consumer } from '../context'; 
 
 import '../styles/main.scss';
 
@@ -24,65 +26,62 @@ class App extends Component {
       this.loadPokemon();
    }
 
-   loadPokemon = () => {
+   loadPokemon = async () => {
       const { page, limit } = this.state;
       const offset = page - 1;
 
-      api.getPokemons(pokemon => {
-         this.setState({ pokemons: pokemon.data.results });
-      }, error => {
-         console.log(error);
-      }, offset, limit);
+      try {
+         const response = await api.getPokemons(offset, limit);
+         this.setState({
+            pokemons: response.data.results
+         });
+      } catch (error) {
+         console.log(`error load pokemon : ${error}`);         
+      }
    }
 
-   loadMorePokemon = () => {
+   loadMorePokemon = async () => {
       const { page, limit, pokemons } = this.state;
       const offset = page * limit;
 
-      this.setState({ isLoading: true }, () => {
-         api.getPokemons(pokemon => {
-            this.setState({
-               pokemons: [...pokemons, ...pokemon.data.results],
-               page: page + 1,
-               isLoading: false
-            });
-         }, error => {
-            console.log(error);
-         }, offset, limit)
+      this.setState({ isLoading: true });
+
+      const response = await api.getPokemons(offset, limit);
+      this.setState({
+         pokemons: [...pokemons, ...response.data.results],
+         page: page + 1,
+         isLoading: false
       });
    }
 
-   onGetDetail = (name) => {
+   onGetDetail = async (name) => {
       document.body.style.overflow = 'hidden';
-      api.getPokemonDetail(pokemon => {
-         this.setState({
-            pokemonSelected: pokemon.data,
-            isOpen: true,
-         });
-      }, error => {
-         console.log(error)
-      }, name);
-   }
-
-   onNextPokemon = () => {
-      const next = this.state.pokemonSelected.id + 1;
-      this.setState({ isLoading: true }, () => {
-         api.getPokemonDetail(pokemon => {
-            this.setState({ pokemonSelected: pokemon.data, isLoading: false });
-         }, error => {
-            console.log(error);
-         }, next);
+      const response = await api.getPokemonDetail(name);
+      this.setState({
+         pokemonSelected: response.data,
+         isOpen: true,
       });
    }
 
-   onPrevPokemon = () => {
+   onNextPokemon = async () => {
+      const next = this.state.pokemonSelected.id + 1;
+      this.setState({ isLoading: true });
+
+      const response = await api.getPokemonDetail(next);
+      this.setState({
+         pokemonSelected: response.data,
+         isLoading: false
+      });
+   }
+
+   onPrevPokemon = async () => {
       const prev = this.state.pokemonSelected.id - 1;
-      this.setState({ isLoading: true }, () => {
-         api.getPokemonDetail(pokemon => {
-            this.setState({ pokemonSelected: pokemon.data, isLoading: false });
-         }, error => {
-            console.log(error);
-         }, prev);
+      this.setState({ isLoading: true });
+
+      const response = await api.getPokemonDetail(prev);
+      this.setState({
+         pokemonSelected: response.data,
+         isLoading: false
       });
    }
 
@@ -94,22 +93,19 @@ class App extends Component {
       });
    }
 
-   selectHandleChange = (ev) => {
-      this.setState({
-         pokemonCategory: ev.target.value
-      }, () => {
-         if(this.state.pokemonCategory === 'all') {
-            this.loadPokemon();
-         } else {
-            api.getPokemonType(({ data : { pokemon } }) => {
-               this.setState({
-                  pokemons: pokemon
-               }, () => console.log('from select', this.state.pokemons));
-            }, error => {
-               console.log(error);
-            }, this.state.pokemonCategory);
+   selectHandleChange = async (ev) => {
+      this.setState({ pokemonCategory: ev.target.value });
+
+      if(this.state.pokemonCategory === 'all') {
+         this.loadPokemon();
+      } else {
+         try {
+            const response = await api.getPokemonType(this.state.pokemonCategory);
+            this.setState({ pokemons: response.data.pokemon });
+         } catch (error) {
+            console.log(error);            
          }
-      });
+      }
    }
 
    searchHandleChange = (ev) => {
@@ -141,40 +137,47 @@ class App extends Component {
    render() {
       const { pokemons } = this.state;
       return (
-         <div className="container">
-            <div className="header">
-               <h2 className="title-page">Pokedex</h2>
-               <h3>Total Pokemons : {pokemons.length}</h3>
-               <FilterBar
-                  search={this.state.search}
-                  searchHandle={this.searchHandleChange}
-                  pokemonCategory={this.state.pokemonCategory}
-                  selectHandleChange={this.selectHandleChange}
-                  onSearchSubmit={this.onSearchSubmit}
-               />
-            </div>
-            {!pokemons.length ?
-               <div className="retrieve-data">Retrieve Pokemon...</div>
-               :
-               <PokeList
-                  pokemons={this.state.pokemons}
-                  clickDetail={this.onGetDetail}
-                  isLoading={this.state.isLoading}
-                  loadMorePokemon={this.loadMorePokemon}
-                  search={this.state.search}
-                  pokemonCategory={this.state.pokemonCategory}
-               />
-            }
-            <SideDetail
-               isOpen={this.state.isOpen}
-               pokemon={this.state.pokemonSelected}
-               onCloseDetail={this.onCloseDetail}
-               onNextPokemon={this.onNextPokemon}
-               onPrevPokemon={this.onPrevPokemon}
-               isLoading={this.state.isLoading}
-            />
-            <div className="overlay" onClick={this.onCloseDetail}></div>
-         </div>
+         <Consumer>
+            { value => {
+               console.log(value);
+               return (
+                  <div className="container">
+                     <div className="header">
+                        <h2 className="title-page">Pokedex</h2>
+                        <h3>Total Pokemons : {pokemons.length}</h3>
+                        <FilterBar
+                           search={this.state.search}
+                           searchHandle={this.searchHandleChange}
+                           pokemonCategory={this.state.pokemonCategory}
+                           selectHandleChange={this.selectHandleChange}
+                           onSearchSubmit={this.onSearchSubmit}
+                        />
+                     </div>
+                     {!pokemons.length ?
+                        <div className="retrieve-data">Retrieve Pokemon...</div>
+                        :
+                        <PokeList
+                           pokemons={this.state.pokemons}
+                           clickDetail={this.onGetDetail}
+                           isLoading={this.state.isLoading}
+                           loadMorePokemon={this.loadMorePokemon}
+                           search={this.state.search}
+                           pokemonCategory={this.state.pokemonCategory}
+                        />
+                     }
+                     <SideDetail
+                        isOpen={this.state.isOpen}
+                        pokemon={this.state.pokemonSelected}
+                        onCloseDetail={this.onCloseDetail}
+                        onNextPokemon={this.onNextPokemon}
+                        onPrevPokemon={this.onPrevPokemon}
+                        isLoading={this.state.isLoading}
+                     />
+                     <div className="overlay" onClick={this.onCloseDetail}></div>
+                  </div>
+               )
+            }}
+         </Consumer>
       );
    }
 }
