@@ -1,6 +1,5 @@
 import React from 'react';
 import * as api from '../api/pokemon';
-import { setIdFromURL } from '../utils';
 
 const RootContext = React.createContext();
 
@@ -9,36 +8,37 @@ export class Provider extends React.Component {
       super(props);
       this.state = {
          pokemons: [],
-         pokemon: {}
+         page: 1,
+         limit: 40
       }
    }
 
-   componentDidMount() {
-      this.fetchPokemonData();
-   }
-   
-   fetchPokemonData = () => {
-      api.getPokemons(pokemon => {
-         let arrPokemon = [];
-         pokemon.data.results.map(item => {
-            arrPokemon.push({
-               name: item.name,
-               id: setIdFromURL(item.url)
-            });
-            return item;
-         });
-         // console.log('uwaw', arrPokemon);
-         this.setState({ pokemon: arrPokemon }, () => console.log(this.state.pokemon));
-      });
+   getPokemons = async () => {
+      const { page, limit } = this.state;
+      const offset = page - 1;
+      try {
+         const response = await api.getPokemons(offset, limit);
+         this.setState({ pokemons: response.data.results }, () => console.log(this.state.pokemons));   
+      } catch (error) {
+         console.log(`error load pokemon : ${error}`);
+      }
    }
    
    render() {
+      const reducer = {
+         state: this.state,
+         dispatch: {
+            getPokemons: this.getPokemons
+         }
+      }
+
       return (
-         <RootContext.Provider value={this.state}>
+         <RootContext.Provider value={reducer}>
             {this.props.children}
          </RootContext.Provider>
       )
    }
 }
 
-export const Consumer = RootContext.Consumer;
+// export const Consumer = RootContext.Consumer;
+export default RootContext;

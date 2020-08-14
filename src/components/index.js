@@ -5,7 +5,7 @@ import FilterBar from './FilterBar';
 import PokeList from './PokeList';
 import SideDetail from './SideDetail';
 
-import { Consumer } from '../context'; 
+import RootContext from '../context';
 
 import '../styles/main.scss';
 
@@ -22,23 +22,26 @@ class App extends Component {
       filtered: []
    }
 
+   static contextType = RootContext;
+
    componentDidMount() {
-      this.loadPokemon();
+      const context = this.context;
+      context.dispatch.getPokemons();
    }
 
-   loadPokemon = async () => {
-      const { page, limit } = this.state;
-      const offset = page - 1;
+   // loadPokemon = async () => {
+   //    const { page, limit } = this.state;
+   //    const offset = page - 1;
 
-      try {
-         const response = await api.getPokemons(offset, limit);
-         this.setState({
-            pokemons: response.data.results
-         });
-      } catch (error) {
-         console.log(`error load pokemon : ${error}`);         
-      }
-   }
+   //    try {
+   //       const response = await api.getPokemons(offset, limit);
+   //       this.setState({
+   //          pokemons: response.data.results
+   //       });
+   //    } catch (error) {
+   //       console.log(`error load pokemon : ${error}`);         
+   //    }
+   // }
 
    loadMorePokemon = async () => {
       const { page, limit, pokemons } = this.state;
@@ -135,50 +138,44 @@ class App extends Component {
    }
 
    render() {
-      const { pokemons } = this.state;
+      const context = this.context;
+
       return (
-         <Consumer>
-            { value => {
-               console.log(value);
-               return (
-                  <div className="container">
-                     <div className="header">
-                        <h2 className="title-page">Pokedex</h2>
-                        <h3>Total Pokemons : {pokemons.length}</h3>
-                        <FilterBar
-                           search={this.state.search}
-                           searchHandle={this.searchHandleChange}
-                           pokemonCategory={this.state.pokemonCategory}
-                           selectHandleChange={this.selectHandleChange}
-                           onSearchSubmit={this.onSearchSubmit}
-                        />
-                     </div>
-                     {!pokemons.length ?
-                        <div className="retrieve-data">Retrieve Pokemon...</div>
-                        :
-                        <PokeList
-                           pokemons={this.state.pokemons}
-                           clickDetail={this.onGetDetail}
-                           isLoading={this.state.isLoading}
-                           loadMorePokemon={this.loadMorePokemon}
-                           search={this.state.search}
-                           pokemonCategory={this.state.pokemonCategory}
-                        />
-                     }
-                     <SideDetail
-                        isOpen={this.state.isOpen}
-                        pokemon={this.state.pokemonSelected}
-                        onCloseDetail={this.onCloseDetail}
-                        onNextPokemon={this.onNextPokemon}
-                        onPrevPokemon={this.onPrevPokemon}
-                        isLoading={this.state.isLoading}
-                     />
-                     <div className="overlay" onClick={this.onCloseDetail}></div>
-                  </div>
-               )
-            }}
-         </Consumer>
-      );
+         <div className="container">
+            <div className="header">
+               <h2 className="title-page">Pokedex</h2>
+               <h3>Total Pokemons : {context.state.pokemons.length}</h3>
+               <FilterBar
+                  search={this.state.search}
+                  searchHandle={this.searchHandleChange}
+                  pokemonCategory={this.state.pokemonCategory}
+                  selectHandleChange={this.selectHandleChange}
+                  onSearchSubmit={this.onSearchSubmit}
+               />
+            </div>
+            {!context.state.pokemons.length ?
+               <div className="retrieve-data">Retrieve Pokemon...</div>
+               :
+               <PokeList
+                  pokemons={context.state.pokemons}
+                  clickDetail={this.onGetDetail}
+                  isLoading={this.state.isLoading}
+                  loadMorePokemon={this.loadMorePokemon}
+                  search={this.state.search}
+                  pokemonCategory={this.state.pokemonCategory}
+               />
+            }
+            <SideDetail
+               isOpen={this.state.isOpen}
+               pokemon={this.state.pokemonSelected}
+               onCloseDetail={this.onCloseDetail}
+               onNextPokemon={this.onNextPokemon}
+               onPrevPokemon={this.onPrevPokemon}
+               isLoading={this.state.isLoading}
+            />
+            <div className="overlay" onClick={this.onCloseDetail}></div>
+         </div>
+      )
    }
 }
 
