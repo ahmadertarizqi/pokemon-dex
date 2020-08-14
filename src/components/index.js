@@ -21,6 +21,7 @@ class App extends Component {
    }
 
    componentDidMount() {
+<<<<<<< HEAD
       this.loadPokemon();
    }
 
@@ -33,6 +34,10 @@ class App extends Component {
       }, error => {
          console.log(error);
       }, offset, limit);
+=======
+      const context = this.context;
+      context.dispatch.getPokemons();
+>>>>>>> parent of bc5b335... simplify call
    }
 
    loadMorePokemon = () => {
