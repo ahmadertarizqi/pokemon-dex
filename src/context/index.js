@@ -10,8 +10,7 @@ export class Provider extends React.Component {
       limit: 40,
       isLoading: false,
       isOpen: false,
-      pokemonSelected: null,
-      pokemonType: 'all'
+      pokemonSelected: null
    }
 
    async getPokemons() {

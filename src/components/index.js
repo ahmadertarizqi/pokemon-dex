@@ -11,7 +11,8 @@ class App extends Component {
    state = {
       search: '',
       pokemonCategory: 'all',
-      filtered: []
+      filtered: [],
+      showButton: null
    }
 
    static contextType = RootContext;
@@ -31,8 +32,13 @@ class App extends Component {
    }
 
    onPrevPokemon = () => {
-      const prev = this.context.state.pokemonSelected.id - 1;
-      this.context.onNextPrevPokemon(prev, 'prev');
+      const pokemonSelected = this.context.state.pokemonSelected.id;
+      if(pokemonSelected > 1) {
+         const prev = pokemonSelected - 1;
+         this.context.onNextPrevPokemon(prev, 'prev');
+      } else {
+         alert('Sorry, this is the first pokemon');
+      }
    }
 
    onCloseDetail = () => {
