@@ -50,18 +50,15 @@ export class Provider extends React.Component {
       this.setState({ pokemonSelected: null, isOpen: false });
    }
 
-   async onNextPokemon(id) {
+   async onNextPrevPokemon(id, btn) {
       this.setState({ isLoading: true });
-      const response = await api.getPokemonDetail(id);
-      this.setState({ 
-         pokemonSelected: response.data, 
-         isLoading: false 
-      });
-   }
-
-   async onPrevPokemon(id) {
-      this.setState({ isLoading: true });
-      const response = await api.getPokemonDetail(id);
+      let response;
+      if(btn === 'prev') {
+         response = await api.getPokemonDetail(id);
+      } else if (btn === 'next') {
+         response = await api.getPokemonDetail(id);
+      }
+      
       this.setState({ 
          pokemonSelected: response.data, 
          isLoading: false 
@@ -82,8 +79,7 @@ export class Provider extends React.Component {
          getPokemonDetail: this.onGetPokemonDetail.bind(this),
          closePokemonDetail: this.onClosePokemonDetail.bind(this),
          loadMorePokemon: this.loadMorePokemons.bind(this),
-         nextPokemon: this.onNextPokemon.bind(this),
-         prevPokemon: this.onPrevPokemon.bind(this),
+         onNextPrevPokemon: this.onNextPrevPokemon.bind(this),
          getPokemonType: this.getPokemonType.bind(this)
       }
 

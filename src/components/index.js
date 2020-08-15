@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import * as api from '../api/pokemon';
+import RootContext from '../context';
 
 import FilterBar from './FilterBar';
 import PokeList from './PokeList';
 import SideDetail from './SideDetail';
-
-import RootContext from '../context';
 
 import '../styles/main.scss';
 
@@ -29,12 +27,12 @@ class App extends Component {
 
    onNextPokemon = () => {
       const next = this.context.state.pokemonSelected.id + 1;
-      this.context.nextPokemon(next);
+      this.context.onNextPrevPokemon(next, 'next');
    }
 
    onPrevPokemon = () => {
       const prev = this.context.state.pokemonSelected.id - 1;
-      this.context.prevPokemon(prev);
+      this.context.onNextPrevPokemon(prev, 'prev');
    }
 
    onCloseDetail = () => {
