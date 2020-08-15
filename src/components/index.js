@@ -22,23 +22,6 @@ class App extends Component {
       filtered: []
    }
 
-   componentDidMount() {
-      this.loadPokemon();
-   }
-
-   loadPokemon = () => {
-      const { page, limit } = this.state;
-      const offset = page - 1;
-
-      api.getPokemons(pokemon => {
-         this.setState({ pokemons: pokemon.data.results });
-      }, error => {
-         console.log(error);
-      }, offset, limit);
-      const context = this.context;
-      context.dispatch.getPokemons();
-   }
-
    static contextType = RootContext;
 
    componentDidMount() {
