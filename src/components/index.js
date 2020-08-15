@@ -29,34 +29,6 @@ class App extends Component {
       context.getPokemons();
    }
 
-   // loadPokemon = async () => {
-   //    const { page, limit } = this.state;
-   //    const offset = page - 1;
-
-   //    try {
-   //       const response = await api.getPokemons(offset, limit);
-   //       this.setState({
-   //          pokemons: response.data.results
-   //       });
-   //    } catch (error) {
-   //       console.log(`error load pokemon : ${error}`);         
-   //    }
-   // }
-
-   loadMorePokemon = async () => {
-      const { page, limit, pokemons } = this.state;
-      const offset = page * limit;
-
-      this.setState({ isLoading: true });
-
-      const response = await api.getPokemons(offset, limit);
-      this.setState({
-         pokemons: [...pokemons, ...response.data.results],
-         page: page + 1,
-         isLoading: false
-      });
-   }
-
    onGetDetail = async (name) => {
       document.body.style.overflow = 'hidden';
       const response = await api.getPokemonDetail(name);
@@ -139,6 +111,7 @@ class App extends Component {
 
    render() {
       const context = this.context;
+      console.log(context);
 
       return (
          <div className="container">
@@ -159,8 +132,8 @@ class App extends Component {
                <PokeList
                   pokemons={context.state.pokemons}
                   clickDetail={this.onGetDetail}
-                  isLoading={this.state.isLoading}
-                  loadMorePokemon={this.loadMorePokemon}
+                  isLoading={context.state.isLoading}
+                  loadMorePokemon={context.loadMorePokemon}
                   search={this.state.search}
                   pokemonCategory={this.state.pokemonCategory}
                />
