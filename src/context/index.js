@@ -4,14 +4,14 @@ import * as api from '../api/pokemon';
 const RootContext = React.createContext();
 
 export class Provider extends React.Component {
-   constructor(props) {
-      super(props);
-      this.state = {
-         pokemons: [],
-         page: 1,
-         limit: 40,
-         isLoading: false
-      }
+   state = {
+      pokemons: [],
+      page: 1,
+      limit: 40,
+      isLoading: false,
+      isOpen: false,
+      pokemonSelected: null,
+      pokemonType: 'all'
    }
 
    async getPokemons() {
@@ -37,12 +37,54 @@ export class Provider extends React.Component {
          isLoading: false
       });
    }
+
+   async onGetPokemonDetail(name) {
+      const response = await api.getPokemonDetail(name);
+      this.setState({
+         pokemonSelected: response.data,
+         isOpen: true
+      });
+   }
+
+   onClosePokemonDetail() {
+      this.setState({ pokemonSelected: null, isOpen: false });
+   }
+
+   async onNextPokemon(id) {
+      this.setState({ isLoading: true });
+      const response = await api.getPokemonDetail(id);
+      this.setState({ 
+         pokemonSelected: response.data, 
+         isLoading: false 
+      });
+   }
+
+   async onPrevPokemon(id) {
+      this.setState({ isLoading: true });
+      const response = await api.getPokemonDetail(id);
+      this.setState({ 
+         pokemonSelected: response.data, 
+         isLoading: false 
+      });
+   }
+
+   async getPokemonType(type) {
+      const response = await api.getPokemonType(type);
+      this.setState({
+         pokemons: response.data.pokemon
+      });
+   }
    
    render() {
       const reducer = {
          state: this.state,
          getPokemons: this.getPokemons.bind(this),
-         loadMorePokemon: this.loadMorePokemons.bind(this)
+         getPokemonDetail: this.onGetPokemonDetail.bind(this),
+         closePokemonDetail: this.onClosePokemonDetail.bind(this),
+         loadMorePokemon: this.loadMorePokemons.bind(this),
+         nextPokemon: this.onNextPokemon.bind(this),
+         prevPokemon: this.onPrevPokemon.bind(this),
+         getPokemonType: this.getPokemonType.bind(this)
       }
 
       return (

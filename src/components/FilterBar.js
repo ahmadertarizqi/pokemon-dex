@@ -1,13 +1,13 @@
 import React from 'react';
 import { pokemonType } from '../api/pokemonType';
 
-const FilterBar = ({ pokemonCategory, selectHandleChange, search, searchHandle, onSearchSubmit }) => {
+const FilterBar = ({ pokemonCategory, selectByType, search, searchHandle, onSearchSubmit }) => {
    return (
       <form className="toolbar-wrap" onSubmit={onSearchSubmit}>
          <div className="row">
             <div className="columns lg-4 sm-12">
                <div className="field">
-                  <select className="input-select" value={pokemonCategory} onChange={selectHandleChange}>
+                  <select className="input-select" value={pokemonCategory} onChange={selectByType}>
                      <option value="all">--All Type Pokemons--</option>
                      {pokemonType.map((type, idx) => (
                         <option key={idx} value={idx + 1}>{type.toString()}</option>
