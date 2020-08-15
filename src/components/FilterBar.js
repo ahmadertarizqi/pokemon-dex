@@ -10,7 +10,7 @@ const FilterBar = ({ pokemonCategory, selectByType, search, searchHandle, onSear
                   <select className="input-select" value={pokemonCategory} onChange={selectByType}>
                      <option value="all">--All Type Pokemons--</option>
                      {pokemonType.map((type, idx) => (
-                        <option key={idx} value={idx + 1}>{type.toString()}</option>
+                        <option key={idx} value={type}>{type.toString()}</option>
                      ))}
                   </select>
                </div>
