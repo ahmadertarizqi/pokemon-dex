@@ -1,7 +1,7 @@
 import React from 'react';
 import * as api from '../api/pokemon';
 
-const RootContext = React.createContext();
+export const RootContext = React.createContext();
 
 export class Provider extends React.Component {
    state = {

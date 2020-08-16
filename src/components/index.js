@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import RootContext from '../context';
+import { withAppContext } from '../store/withAppContext';
 
 import FilterBar from './FilterBar';
 import PokeList from './PokeList';
@@ -11,31 +11,28 @@ class App extends Component {
    state = {
       search: '',
       pokemonCategory: 'all',
-      filtered: [],
-      showButton: null
+      filtered: []
    }
 
-   static contextType = RootContext;
-
    componentDidMount() {
-      this.context.getPokemons();
+      this.props.context.getPokemons();
    }
 
    onGetDetail = (name) => {
       document.body.style.overflow = 'hidden';
-      this.context.getPokemonDetail(name);
+      this.props.context.getPokemonDetail(name);
    }
 
    onNextPokemon = () => {
-      const next = this.context.state.pokemonSelected.id + 1;
-      this.context.onNextPrevPokemon(next, 'next');
+      const next = this.props.context.state.pokemonSelected.id + 1;
+      this.props.context.onNextPrevPokemon(next, 'next');
    }
 
    onPrevPokemon = () => {
-      const pokemonSelected = this.context.state.pokemonSelected.id;
+      const pokemonSelected = this.props.context.state.pokemonSelected.id;
       if(pokemonSelected > 1) {
          const prev = pokemonSelected - 1;
-         this.context.onNextPrevPokemon(prev, 'prev');
+         this.props.context.onNextPrevPokemon(prev, 'prev');
       } else {
          alert('Sorry, this is the first pokemon');
       }
@@ -43,15 +40,15 @@ class App extends Component {
 
    onCloseDetail = () => {
       document.body.style.overflow = 'initial';
-      this.context.closePokemonDetail();
+      this.props.context.closePokemonDetail();
    }
 
    selectByType = (ev) => {
       this.setState({ pokemonCategory: ev.target.value });
       if(ev.target.value === 'all') {
-         this.context.getPokemons();
+         this.props.context.getPokemons();
       } else {
-         this.context.getPokemonType(ev.target.value);
+         this.props.context.getPokemonType(ev.target.value);
       }
    }
 
@@ -60,8 +57,8 @@ class App extends Component {
    }
 
    render() {
-      const context = this.context;
-      // console.log(context);
+      // console.log(this.props, 'test');
+      const { context } = this.props;
 
       return (
          <div className="container">
@@ -102,4 +99,4 @@ class App extends Component {
    }
 }
 
-export default App;
+export default withAppContext(App);
