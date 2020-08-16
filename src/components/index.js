@@ -53,12 +53,16 @@ class App extends Component {
    }
 
    searchHandleChange = (ev) => {
-      console.log(ev.target.value);
+      this.setState({ search: ev.target.value });
    }
 
    render() {
       // console.log(this.props, 'test');
       const { context } = this.props;
+
+      const filteredPokemons = context.state.pokemons.filter(pokemon => {
+         return pokemon.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
+      });
 
       return (
          <div className="container">
@@ -73,11 +77,11 @@ class App extends Component {
                   onSearchSubmit={this.onSearchSubmit}
                />
             </div>
-            {!context.state.pokemons.length || context.state.isLoading ?
+            {!context.state.pokemons.length ?
                <div className="retrieve-data">Loading Pokemon...</div>
                :
                <PokeList
-                  pokemons={context.state.pokemons}
+                  pokemons={filteredPokemons}
                   clickDetail={this.onGetDetail}
                   isLoading={context.state.isLoading}
                   loadMorePokemon={context.loadMorePokemon}

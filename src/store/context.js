@@ -67,8 +67,19 @@ export class Provider extends React.Component {
    async getPokemonType(type) {
       this.setState({ isLoading: true });
       const response = await api.getPokemonType(type);
+      const { pokemon } = response.data;
+      
+      let reducePokemons = [];
+      pokemon.forEach(data => {
+         const temp = {
+            name: data.pokemon.name,
+            url: data.pokemon.url,
+         }
+         reducePokemons.push(temp);
+      });
+
       this.setState({
-         pokemons: response.data.pokemon,
+         pokemons: reducePokemons,
          isLoading: false
       });
    }
