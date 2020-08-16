@@ -73,8 +73,8 @@ class App extends Component {
                   onSearchSubmit={this.onSearchSubmit}
                />
             </div>
-            {!context.state.pokemons.length ?
-               <div className="retrieve-data">Retrieve Pokemon...</div>
+            {!context.state.pokemons.length || context.state.isLoading ?
+               <div className="retrieve-data">Loading Pokemon...</div>
                :
                <PokeList
                   pokemons={context.state.pokemons}
