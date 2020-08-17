@@ -32,12 +32,14 @@ const PokeList = (props) => {
          
          {search !== '' || pokemonCategory !== 'all' ? 
             null :
-            <button className="btn-more"
-               disabled={isLoading}
-               onClick={loadMorePokemon}
-            >
-               {isLoading ? 'Fetching Pokemon...' : 'Load More Pokemon'}
-            </button>
+            <div className="columns lg-12 sm-12">
+               <button className="btn-more"
+                  disabled={isLoading}
+                  onClick={loadMorePokemon}
+               >
+                  {isLoading ? 'Fetching Pokemon...' : 'Load More Pokemon'}
+               </button>
+            </div>
          }
       </div>
    );
