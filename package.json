@@ -1,6 +1,7 @@
 {
   "name": "pokemon-dex",
   "version": "0.1.0",
+  "homepage": "https://ahmadertarizqi.github.io/pokemon-dex",
   "private": true,
   "dependencies": {
     "axios": "^0.19.1",
